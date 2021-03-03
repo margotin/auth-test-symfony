@@ -3,10 +3,6 @@ build:
 	$(MAKE) analyze
 	$(MAKE) tests
 
-#.PHONY: translations
-#translations:
-#	php bin/console translation:update --force fr
-
 .PHONY: tests
 tests:
 	php bin/phpunit
