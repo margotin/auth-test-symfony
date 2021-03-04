@@ -11,7 +11,7 @@ analyze:
 	npm audit
 	composer valid
 	php bin/console doctrine:schema:valid --skip-sync --env=test
-	php vendor/bin/phpcs
+	sh vendor/bin/phpcs
 
 prepare-dev:
 	npm install
