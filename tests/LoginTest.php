@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\User\UserChecker;
-use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
-use Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
 
 class LoginTest extends WebTestCase
 {
+
+    public const FIREWALL_CONTEXT = "main";
+
     /**
      * @param string $email
      * @dataProvider provideEmails
@@ -42,19 +39,22 @@ class LoginTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        $client->enableProfiler();
         $client->followRedirect();
 
-        if ($profile = $client->getProfile()) {
+        /** @var SessionInterface $session */
+        $session = $client->getContainer()->get("session");
+        $sessionSecurityKey = "_security_" . self::FIREWALL_CONTEXT;
 
-            /** @var SecurityDataCollector $security */
-            $security = $profile->getCollector("security");
+        $this->assertSame(true, $session->has($sessionSecurityKey));
 
-            $this->assertSame($email, $security->getUser());
-        }
+        /** @var PostAuthenticationGuardToken $token */
+        $token = unserialize($session->get($sessionSecurityKey));
+
+        $this->assertSame(true, $token->isAuthenticated());
+        $this->assertSame($email, $token->getUsername());
     }
 
-    public function provideEmails(): \Generator
+    public function provideEmails(): Generator
     {
         yield ['toto@email.com'];
         yield ['tata@email.com'];
