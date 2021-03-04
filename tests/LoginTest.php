@@ -5,9 +5,18 @@ declare(strict_types=1);
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\SecurityBundle\DataCollector\SecurityDataCollector;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserChecker;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+use Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginTest extends WebTestCase
 {
@@ -33,9 +42,16 @@ class LoginTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
+        $client->enableProfiler();
         $client->followRedirect();
 
-        $this->assertSelectorTextContains("h1", 'Hello HomeController! ✅');
+        if ($profile = $client->getProfile()) {
+
+            /** @var SecurityDataCollector $security */
+            $security = $profile->getCollector("security");
+
+            $this->assertSame($email, $security->getUser());
+        }
     }
 
     public function provideEmails(): \Generator
