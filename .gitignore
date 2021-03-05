@@ -1,3 +1,8 @@
+###> project ###
+.idea
+/build
+###< projet ###
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -14,6 +19,14 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-###> ché pa ###
-.idea
-###< ché pa ###
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###
