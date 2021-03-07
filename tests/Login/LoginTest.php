@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Login;
 
+use App\Repository\UserRepository;
 use Generator;
 
 class LoginTest extends AbstractLoginTest
@@ -12,6 +13,7 @@ class LoginTest extends AbstractLoginTest
     protected string $formSelector = "form[name=login]";
     protected string $loginRouteName = "security_login";
     protected string $idUsedWhenGeneratingTheToken = "authenticate";
+    protected string $userRepository = UserRepository::class;
 
     public function provideValidEmailsAndValidPasswords(): Generator
     {

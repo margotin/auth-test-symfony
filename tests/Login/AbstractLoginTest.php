@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Login;
 
-use App\Repository\UserRepository;
-use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +20,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
     protected string $formSelector;
     protected string $loginRouteName;
     protected string $idUsedWhenGeneratingTheToken;
+    protected string $userRepository;
 
     /**
      * @param string $email
@@ -106,7 +105,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
         $client->submit($form);
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        $userRepository = static::$container->get(UserRepository::class);
+        $userRepository = static::$container->get($this->userRepository);
         /** @var UserInterface $user */
         $user = $userRepository->findOneBy(["email" => $email]);
         $this->assertSame($user->getUsername(), $client->getRequest()->request->get("email"));
@@ -137,16 +136,9 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
         $client->submit($form);
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        $userRepository = static::$container->get(UserRepository::class);
+        $userRepository = static::$container->get($this->userRepository);
         /** @var UserInterface $user */
         $user = $userRepository->findOneBy(["email" => $email]);
         $this->assertNull($user);
     }
-
-
-    abstract public function provideValidEmailsAndValidPasswords(): Generator;
-
-    abstract public function provideValidEmailsAndInvalidPasswords(): Generator;
-
-    abstract public function provideInvalidEmailsAndValidPasswords(): Generator;
 }
