@@ -15,6 +15,13 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-6 mt-5">
+                    {% include "partials/_flash.html.twig" %}
+                </div>
+            </div>
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>

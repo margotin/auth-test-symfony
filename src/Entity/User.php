@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -21,18 +22,29 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
+    private string $password;
+
+    /**
+     * @Assert\NotBlank
+     * @Assert\Length(min=8)
+     */
+    private ?string $plainPassword = '';
+
+    /**
+     * @ORM\Embedded(class="ForgottenPassword")
+     */
+    private ?ForgottenPassword $forgottenPassword;
 
     public function getId(): ?int
     {
@@ -58,7 +70,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -81,11 +93,27 @@ class User implements UserInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param string|null $plainPassword
+     */
+    public function setPlainPassword(?string $plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
+    }
+
+    /**
      * @see UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -109,9 +137,29 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
+    }
+
+    public function hasForgotHisPassword(): void
+    {
+        $this->forgottenPassword = new ForgottenPassword();
+    }
+
+    /**
+     * @return ForgottenPassword
+     */
+    public function getForgottenPassword(): ForgottenPassword
+    {
+        return $this->forgottenPassword;
+    }
+
+    /**
+     * @param ForgottenPassword $forgottenPassword
+     */
+    public function setForgottenPassword(ForgottenPassword $forgottenPassword): void
+    {
+        $this->forgottenPassword = $forgottenPassword;
     }
 }
