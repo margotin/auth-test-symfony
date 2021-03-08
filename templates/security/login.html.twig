@@ -3,24 +3,17 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-6 col-xl-4 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 col-xl-6">
+            {% if app.user %}
+                <div class="alert alert-warning text-center shadow mb-4">
+                    Vous êtes connecté en tant que {{ app.user.username }}
+                </div>
+                <a href="{{ path('security_logout') }}" class="btn btn-danger">Se déconnecter</a>
+                <a href="{{ path('home') }}" class="btn btn-primary">Page d'acceuil</a>
+            {% else %}
                 <form method="post" name="login">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-
-                    {% if app.user %}
-                        <div class="mb-3">
-                            Vous êtes connecté en tant que {{ app.user.username }}, <a href="{{ path('security_logout') }}">Se déconnecter</a>
-                        </div>
-                    {% endif %}
-
-
-
-
-
-
                     <div class="card shadow-lg">
                         <div class="card-header">
                             <h1 class="mb-0 text-center">
@@ -46,10 +39,8 @@
                             <a href="{{ path('security_forgotten_password') }}" class="btn btn-block btn-outline-info">Mot de passe oublié ?</a>
                         </div>
                     </div>
-
                 </form>
-            </div>
+            {% endif %}
         </div>
     </div>
-
 {% endblock %}

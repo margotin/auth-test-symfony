@@ -67,4 +67,10 @@ class ForgottenPassword
     {
         $this->requestedAt = $requestedAt;
     }
+
+    public function reset(): void
+    {
+        $this->token = null;
+        $this->requestedAt = null;
+    }
 }
