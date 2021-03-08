@@ -21,7 +21,7 @@
 
 
 
-                    <div class="card">
+                    <div class="card shadow-lg">
                         <div class="card-header">
                             <h1 class="mb-0 text-center">
                                 Connexion
@@ -32,17 +32,18 @@
                                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                             {% endif %}
                             <div class="form-group">
-                                <label for="inputEmail">Email</label>
+                                <label for="inputEmail">Identifiant</label>
                                 <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required
                                        autofocus>
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword">Password</label>
+                                <label for="inputPassword">Mot de passe</label>
                                 <input type="password" name="password" id="inputPassword" class="form-control" required>
                             </div>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer bg-transparent">
                             <button class="btn btn-block btn-primary">Se connecter</button>
+                            <a href="{{ path('security_forgotten_password') }}" class="btn btn-block btn-outline-info">Mot de passe oublié ?</a>
                         </div>
                     </div>
 
