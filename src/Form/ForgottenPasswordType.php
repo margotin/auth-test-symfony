@@ -23,8 +23,7 @@ class ForgottenPasswordType extends AbstractType
                 "attr" => [
                     "placeholder" => "Votre adresse email"
                 ]
-            ])
-        ;
+            ]);
     }
 
     /**
@@ -32,6 +31,9 @@ class ForgottenPasswordType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault("data_class", ForgottenPasswordDTO::class);
+        $resolver
+            ->setDefault("data_class", ForgottenPasswordDTO::class)
+            ->setDefault("csrf_token_id", ForgottenPasswordDTO::class)
+        ;
     }
 }
