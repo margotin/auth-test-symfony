@@ -7,13 +7,16 @@ namespace App\Dto;
 use App\Validator\EmailExist;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"ForgottenPasswordDTO", "nextValidation"})
+ */
 class ForgottenPasswordDTO
 {
     /**
      * @var string
      * @Assert\NotBlank()
      * @Assert\Email()
-     * @EmailExist
+     * @EmailExist(groups={"nextValidation"})
      */
     private string $email;
 
