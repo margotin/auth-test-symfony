@@ -65,50 +65,45 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
             $user = $userRepository->findOneBy(["email" => $email]);
+            $user->hasForgotHisPassword();
+            $this->getDoctrine()->getManager()->flush();
 
-            if ($user) {
-                $user->hasForgotHisPassword();
-                $this->getDoctrine()->getManager()->flush();
+            $expiredDate = ($user->getForgottenPassword()->getRequestedAt())
+                ->add(new DateInterval("PT15M"));
 
-                $expiredDate = ($user->getForgottenPassword()->getRequestedAt())
-                    ->add(new DateInterval("PT15M"));
+            $email = (new TemplatedEmail())
+                ->from("admin@fake.com")
+                ->to($user->getEmail())
+                ->subject("Réinitialisation mot de passe")
+                ->htmlTemplate("emails/forgotten_password.html.twig")
+                ->context([
+                    "linkToResetPassword" => $this->generateUrl(
+                        "security_reset_password",
+                        ["token" => $user->getForgottenPassword()->getToken()],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
+                    "time" => sprintf(
+                        "%sh%s",
+                        $expiredDate->format("H"),
+                        $expiredDate->format("i")
+                    )
+                ]);
 
-                $email = (new TemplatedEmail())
-                    ->from("admin@fake.com")
-                    ->to($user->getEmail())
-                    ->subject("Réinitialisation mot de passe")
-                    ->htmlTemplate("emails/forgotten_password.html.twig")
-                    ->context([
-                        "linkToResetPassword" => $this->generateUrl(
-                            "security_reset_password",
-                            ["token" => $user->getForgottenPassword()->getToken()],
-                            UrlGeneratorInterface::ABSOLUTE_URL
-                        ),
-                        "time" => sprintf(
-                            "%sh%s",
-                            $expiredDate->format("H"),
-                            $expiredDate->format("i")
-                        )
-                    ]);
-
-                try {
-                    $mailer->send($email);
-                } catch (TransportExceptionInterface $e) {
-                    $this->addFlash(
-                        "danger",
-                        "Une erreur est survenue. Merci de faire une nouvelle demande."
-                    );
-                    return $this->redirectToRoute("security_forgotten_password");
-                }
+            try {
+                $mailer->send($email);
+            } catch (TransportExceptionInterface $e) {
                 $this->addFlash(
-                    "success",
-                    "Un email vient de vous être envoyé 
-                    avec les instructions nécessaires pour réunitialiser votre mot de passe."
+                    "danger",
+                    "Une erreur est survenue. Merci de faire une nouvelle demande."
                 );
-                return $this->redirectToRoute("security_login");
+                return $this->redirectToRoute("security_forgotten_password");
             }
-            $this->addFlash("danger", "L'adresse \"$email\" n'existe pas.");
-            return $this->redirectToRoute("security_forgotten_password");
+            $this->addFlash(
+                "success",
+                "Un email vient de vous être envoyé 
+                    avec les instructions nécessaires pour réunitialiser votre mot de passe."
+            );
+            return $this->redirectToRoute("security_login");
         }
 
         return $this->render('security/forgotten_password.html.twig', [

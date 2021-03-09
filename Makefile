@@ -14,7 +14,8 @@ prepare-dev: bin
 	php bin/console doctrine:database:create --env=dev
 	php bin/console doctrine:schema:update -f --env=dev
 	php bin/console doctrine:fixtures:load -n --env=dev
-	npm run watch
+	npm run dev
+	docker-compose up -d
 
 .PHONY: prepare-test
 prepare-test: bin

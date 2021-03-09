@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
+use App\Validator\EmailExist;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ForgottenPasswordDTO
@@ -12,6 +13,7 @@ class ForgottenPasswordDTO
      * @var string
      * @Assert\NotBlank()
      * @Assert\Email()
+     * @EmailExist
      */
     private string $email;
 
