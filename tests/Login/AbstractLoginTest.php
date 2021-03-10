@@ -19,6 +19,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
     protected string $firewallContext;
     protected string $formSelector;
     protected string $loginRouteName;
+    protected string $redirectRouteName;
     protected string $idUsedWhenGeneratingTheToken;
     protected string $userRepository;
 
@@ -42,6 +43,9 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
 
         $client->submit($form);
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+        $this->assertRouteSame($this->redirectRouteName);
 
         /** @var SessionInterface $session */
         $session = static::$container->get("session");
@@ -75,6 +79,9 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
 
         $client->submit($form);
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+        $this->assertRouteSame($this->loginRouteName);
 
         $token = $client->getRequest()->get("_csrf_token");
         $this->assertFalse(
@@ -113,6 +120,9 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
         /** @var  UserPasswordEncoderInterface $encoder */
         $encoder = static::$container->get(UserPasswordEncoderInterface::class);
         $this->assertFalse($encoder->isPasswordValid($user, $client->getRequest()->request->get("password")));
+
+        $client->followRedirect();
+        $this->assertRouteSame($this->loginRouteName);
     }
 
     /**
@@ -135,6 +145,9 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
 
         $client->submit($form);
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+        $this->assertRouteSame($this->loginRouteName);
 
         $userRepository = static::$container->get($this->userRepository);
         /** @var UserInterface $user */

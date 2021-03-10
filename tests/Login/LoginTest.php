@@ -12,6 +12,7 @@ class LoginTest extends AbstractLoginTest
     protected string $firewallContext = "main";
     protected string $formSelector = "form[name=login]";
     protected string $loginRouteName = "security_login";
+    protected string $redirectRouteName = "home";
     protected string $idUsedWhenGeneratingTheToken = "authenticate";
     protected string $userRepository = UserRepository::class;
 

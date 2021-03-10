@@ -57,7 +57,7 @@ abstract class AbstractForgottenPasswordTest extends WebTestCase implements Forg
         );
 
         $client->followRedirect();
-        $this->assertSame($this->redirectRouteName, $client->getRequest()->attributes->get("_route"));
+        $this->assertRouteSame($this->redirectRouteName);
     }
 
     /**
