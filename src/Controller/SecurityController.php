@@ -94,14 +94,14 @@ class SecurityController extends AbstractController
             } catch (TransportExceptionInterface $e) {
                 $this->addFlash(
                     "danger",
-                    "Une erreur est survenue. Merci de faire une nouvelle demande."
+                    "Une erreur est survenue. <br> Merci de bien vouloir effectuer une nouvelle demande."
                 );
                 return $this->redirectToRoute("security_forgotten_password");
             }
             $this->addFlash(
                 "success",
                 "Un email vient de vous être envoyé 
-                    avec les instructions nécessaires pour réunitialiser votre mot de passe."
+                    avec les instructions nécessaires afin de réunitialiser votre mot de passe."
             );
             return $this->redirectToRoute("security_login");
         }
@@ -136,10 +136,22 @@ class SecurityController extends AbstractController
         ) {
             $this->addFlash(
                 "danger",
-                "Le lien envoyé par mail n'est plus valide. Vous devez effectuer une nouvelle demande."
+                "Le lien envoyé par mail n'est plus valide. <br> Merci de bien vouloir effectuer une nouvelle demande."
             );
             return $this->redirectToRoute("security_forgotten_password");
         }
+
+        if (
+            new DateTimeImmutable() >
+            ($user->getForgottenPassword()->getRequestedAt())->add(new DateInterval("PT15M"))
+        ) {
+            $this->addFlash(
+                "info",
+                "Le lien envoyé par mail a expiré.<br>Merci de bien vouloir effectuer une nouvelle demande."
+            );
+            return $this->redirectToRoute("security_forgotten_password");
+        }
+
 
         $form = $this->createForm(ResetPasswordType::class)->handleRequest($request);
 
@@ -147,15 +159,12 @@ class SecurityController extends AbstractController
             $password = $form->get("plainPassword")->getData();
             $user->setPassword($encoder->encodePassword($user, $password));
             $this->getDoctrine()->getManager()->flush();
-            $this->addFlash("success", "le mot de passe a bien été réinitialisé.");
+            $this->addFlash("success", "Votre mot de passe a bien été réinitialisé.");
             return $this->redirectToRoute("security_login");
         }
 
         return $this->render('security/reset_password.html.twig', [
-            "form" => $form->createView(),
-            "linkExpired" => new DateTimeImmutable() > ($user->getForgottenPassword()->getRequestedAt())->add(
-                new DateInterval("PT15M")
-            )
+            "form" => $form->createView()
         ]);
     }
 }
