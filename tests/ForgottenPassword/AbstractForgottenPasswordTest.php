@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Tests\ForgottenPassword;
 
 use App\Repository\UserRepository;
+use App\Tests\RouterTestTrait;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 
 abstract class AbstractForgottenPasswordTest extends WebTestCase implements ForgottenPasswordTestInterface
 {
+    use RouterTestTrait;
+
     protected string $formSelector;
     protected string $formEmailField;
     protected string $loginRouteName;
@@ -30,9 +32,7 @@ abstract class AbstractForgottenPasswordTest extends WebTestCase implements Forg
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             $this->formEmailField => $email
@@ -68,9 +68,7 @@ abstract class AbstractForgottenPasswordTest extends WebTestCase implements Forg
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             $this->nameCsrfToken => "fail",
@@ -95,9 +93,7 @@ abstract class AbstractForgottenPasswordTest extends WebTestCase implements Forg
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             $this->formEmailField => $email
