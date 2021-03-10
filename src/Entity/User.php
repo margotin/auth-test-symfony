@@ -118,7 +118,6 @@ class User implements UserInterface
 
     public function setPassword(string $password): self
     {
-        $this->forgottenPassword = null;
         $this->password = $password;
 
         return $this;
@@ -149,17 +148,17 @@ class User implements UserInterface
     }
 
     /**
-     * @return ForgottenPassword
+     * @return ForgottenPassword|null
      */
-    public function getForgottenPassword(): ForgottenPassword
+    public function getForgottenPassword(): ?ForgottenPassword
     {
         return $this->forgottenPassword;
     }
 
     /**
-     * @param ForgottenPassword $forgottenPassword
+     * @param ForgottenPassword|null $forgottenPassword
      */
-    public function setForgottenPassword(ForgottenPassword $forgottenPassword): void
+    public function setForgottenPassword(?ForgottenPassword $forgottenPassword): void
     {
         $this->forgottenPassword = $forgottenPassword;
     }
