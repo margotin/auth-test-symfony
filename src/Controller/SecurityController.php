@@ -146,7 +146,6 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $form->get("plainPassword")->getData();
             $user->setPassword($encoder->encodePassword($user, $password));
-            $user->getForgottenPassword()->reset();
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash("success", "le mot de passe a bien été réinitialisé.");
             return $this->redirectToRoute("security_login");
