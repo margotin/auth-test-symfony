@@ -8,4 +8,5 @@ interface ResetPasswordTestInterface
 {
     public function testResetPasswordWithValidToken(): void;
     public function testResetPasswordWithInValidToken(): void;
+    public function testResetPasswordWithExpiredToken(): void;
 }
