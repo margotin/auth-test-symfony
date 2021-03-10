@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Login;
 
+use App\Tests\RouterTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -16,6 +16,8 @@ use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
 
 abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterface
 {
+    use RouterTestTrait;
+
     protected string $firewallContext;
     protected string $formSelector;
     protected string $loginRouteName;
@@ -32,9 +34,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             "email" => $email,
@@ -67,9 +67,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             "_csrf_token" => "fail",
@@ -100,9 +98,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             "email" => $email,
@@ -134,9 +130,7 @@ abstract class AbstractLoginTest extends WebTestCase implements LoginTestInterfa
     {
         $client = static::createClient();
 
-        /** @var RouterInterface $router */
-        $router = static::$container->get("router");
-        $crawler = $client->request(Request::METHOD_GET, $router->generate($this->loginRouteName));
+        $crawler = $client->request(Request::METHOD_GET, $this->getRouter()->generate($this->loginRouteName));
 
         $form = $crawler->filter($this->formSelector)->form([
             "email" => $email,
