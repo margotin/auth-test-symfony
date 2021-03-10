@@ -12,5 +12,4 @@ trait RouterTestTrait
     {
         return static::$container->get("router");
     }
-
 }
